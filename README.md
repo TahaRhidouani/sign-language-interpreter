@@ -8,6 +8,6 @@
 
 <br />
 
-**Recognizes characters in real-time** ![real-time](https://github.com/TahaInc/sign-language-interpreter/blob/main/images/screenshot_1.png?raw=true)
+**Recognizes characters in real-time** ![real-time](https://github.com/TahaInc/sign-language-interpreter/blob/main/images/screenshot_1.jpg?raw=true)
 
-**Features a tutorial modal to help with learning American Sign Language** ![tutorial](https://github.com/TahaInc/sign-language-interpreter/blob/main/images/screenshot_2.png?raw=true)
+**Features a tutorial modal to help with learning American Sign Language** ![tutorial](https://github.com/TahaInc/sign-language-interpreter/blob/main/images/screenshot_2.jpg?raw=true)
