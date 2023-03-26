@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="author" content="Taha Rhidouani">
+    <meta name="description" content="">
+    <meta name="theme-color" content="black">
+    <link rel="icon" href="assets/icon.png">
+    <title id="title">Sign Language Translator</title>
+
+    <link rel="stylesheet" href="index.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js" crossorigin="anonymous"> </script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/typeit@8.7.1/dist/index.umd.js" crossorigin="anonymous"></script>
+
+    <script src="index.js" type="module" defer></script>
+</head>
+
+<body>
+    <div id="loading">
+        <img src="assets/loading.gif">
+        <br>
+        <h2>Loading...</h2>
+    </div>
+
+    <div id="modal">
+        <img id="arrow" src="assets/arrow.png">
+        <img id="tutorial" src="assets/tutorial.png">
+    </div>
+
+    <div id="video_wrapper">
+        <video id="video" autoplay></video>
+
+        <div id="transcription_wrapper">
+            <h1 id="transcription_text"></h1>
+        </div>
+    </div>
+</body>
+
+</html>
