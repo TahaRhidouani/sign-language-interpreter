@@ -20,7 +20,7 @@ const camera = new Camera(video, {
 
 const options = (mode) => ({
   baseOptions: {
-    modelAssetPath: "/assets/hand_landmarker.task",
+    modelAssetPath: "assets/hand_landmarker.task",
   },
   numHands: 1,
   min_hand_detection_confidence: 0,
