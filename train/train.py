@@ -19,6 +19,7 @@ def train(dataset):
 
     X_train, X_val, y_train, y_val = sk.train_test_split(X, y, test_size=0.2)
 
+    # Continue training from old model if it exist, create new model otherwise
     try:
         model = tf.keras.models.load_model(sys.path[0] + '/model')
     except:
@@ -34,9 +35,9 @@ def train(dataset):
         ])
 
     model.compile(optimizer=tf.keras.optimizers.legacy.Adam(), loss=tf.keras.losses.SparseCategoricalCrossentropy(), metrics=['accuracy'])
-
-    earlyStop = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=5)
-    checkpointSave = tf.keras.callbacks.ModelCheckpoint(filepath=sys.path[0] + "/model", save_best_only=True, verbose=1)
+    
+    earlyStop = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=5) # Stop training if loss does not improve for 5 epochs
+    checkpointSave = tf.keras.callbacks.ModelCheckpoint(filepath=sys.path[0] + "/model", save_best_only=True, verbose=1) # Save model after each epoch if performance improved
 
     model.fit(X_train, y_train, epochs=100, validation_data=(X_val, y_val), callbacks=[earlyStop, checkpointSave])
 
@@ -46,13 +47,16 @@ def predict(img):
     mp_hands = mp.solutions.hands
 
     with mp_hands.Hands(static_image_mode=True, max_num_hands=1, min_detection_confidence=0) as hands:
-        image = cv2.flip(cv2.imread(img), 1)
+        
+        # Detect hand landmarks
+        image = cv2.flip(cv2.imread(img), 1) 
         results = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
         if not results.multi_hand_landmarks:
             print("No hands found")
             exit()
 
+        # Process landmark data into array
         data = []
         for landmark in results.multi_hand_landmarks[0].landmark:
             data.append(landmark.x)
@@ -60,13 +64,13 @@ def predict(img):
             data.append(landmark.z)
         
         data.append(1)
-        print(data)
 
+        # Load model from file
         model = tf.keras.models.load_model(sys.path[0] + '/model')
 
+        # Run input through model
         data = tf.expand_dims(data, 0)
         predictions = model.predict(data, verbose=0)
-
         confidence = tf.nn.softmax(predictions[0])
         prediction = LETTERS[np.argmax(confidence)]
 
