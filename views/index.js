@@ -16,9 +16,9 @@ let model;
 const cameraConstraints = { video: { facingMode: "user", width: 1920, height: 1080 } };
 
 // Declare the options for the mediapipe hand landmark detector
-const options = (mode) => ({
+const options = (mode, modelAssetBuffer) => ({
   baseOptions: {
-    modelAssetPath: "assets/hand_landmarker.bin",
+    modelAssetBuffer,
   },
   numHands: 1,
   min_hand_detection_confidence: 0,
@@ -27,14 +27,21 @@ const options = (mode) => ({
 });
 
 async function main() {
-  // Load the ASL interpreter model
-  model = await tf.loadGraphModel("assets/model/model.json");
+  // Load the ASL interpreter model, the mediapipe runtime and the hand landmark model in parallel
+  let vision, handModel;
+  [model, vision, handModel] = await Promise.all([
+    tf.loadGraphModel("assets/model/model.json"),
+    FilesetResolver.forVisionTasks("vendor/tasks-vision/wasm"),
+    fetch("assets/hand_landmarker.bin").then(async (response) => {
+      if (!response.ok) throw new Error("Hand landmark model: HTTP " + response.status);
+      return new Uint8Array(await response.arrayBuffer());
+    }),
+  ]);
 
-  const vision = await FilesetResolver.forVisionTasks("vendor/tasks-vision/wasm");
-
-  // Setup the mediapipe landmark models
-  liveHands = await HandLandmarker.createFromOptions(vision, options("LIVE_STREAM")); // For detecting hand location in webcam input
-  staticHands = await HandLandmarker.createFromOptions(vision, options("IMAGE")); // For detecting hand landmarks in cropped frame
+  // Setup the mediapipe landmark models from the same model bytes, one after the other since each
+  // instance loads the mediapipe runtime through a shared global
+  liveHands = await HandLandmarker.createFromOptions(vision, options("LIVE_STREAM", handModel)); // For detecting hand location in webcam input
+  staticHands = await HandLandmarker.createFromOptions(vision, options("IMAGE", handModel)); // For detecting hand landmarks in cropped frame
 
   // Start the webcam, the video element autoplays the stream
   video.srcObject = await navigator.mediaDevices.getUserMedia(cameraConstraints);
