@@ -5,8 +5,8 @@
     "vendor": "rm -rf views/vendor && mkdir -p views/vendor/tasks-vision views/vendor/tfjs views/vendor/typeit && cp node_modules/@mediapipe/tasks-vision/vision_bundle.mjs views/vendor/tasks-vision/ && cp -R node_modules/@mediapipe/tasks-vision/wasm views/vendor/tasks-vision/ && cp node_modules/@tensorflow/tfjs/dist/tf.min.js views/vendor/tfjs/ && cp node_modules/typeit/dist/index.umd.js views/vendor/typeit/"
   },
   "dependencies": {
-    "@mediapipe/tasks-vision": "0.10.34",
+    "@mediapipe/tasks-vision": "1.2.2",
     "@tensorflow/tfjs": "4.22.0",
-    "typeit": "8.7.1"
+    "typeit": "8.8.7"
   }
 }
