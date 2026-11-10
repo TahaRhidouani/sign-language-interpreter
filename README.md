@@ -14,10 +14,10 @@
 
 ## Run
 
-The site is static (`views/`). Every push to `main` builds the image `ghcr.io/taharhidouani/sign-language-interpreter` (tags `main` and `sha-<commit>`), which serves `views/` with Caddy on port 8080 and answers `GET /healthz`. It needs no variables and stores nothing.
+The site is static (`views/`) and self-hosts its libraries: `package.json` pins MediaPipe Tasks Vision, TensorFlow.js and TypeIt, and `npm run vendor` copies their browser builds into `views/vendor/`. Every push to `main` builds the image `ghcr.io/taharhidouani/sign-language-interpreter` (tags `main` and `sha-<commit>`), which does that in a build stage and serves the result with Caddy on port 8080, answering `GET /healthz`. It needs no variables and stores nothing.
 
 ```sh
 docker run -p 8080:8080 ghcr.io/taharhidouani/sign-language-interpreter:main
 ```
 
-Locally, any static file server works, for example `python3 -m http.server -d views 8080`. The training code (`train/`, `dataset.csv`) is not part of the image.
+Locally, run `npm ci` and `npm run vendor`, then use any static file server, for example `python3 -m http.server -d views 8080`. The training code (`train/`, `dataset.csv`) is not part of the image.

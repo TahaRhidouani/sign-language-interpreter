@@ -1,4 +1,4 @@
-import { HandLandmarker, FilesetResolver } from "https://cdn.skypack.dev/@mediapipe/tasks-vision@latest";
+import { HandLandmarker, FilesetResolver } from "./vendor/tasks-vision/vision_bundle.mjs";
 
 const LETTERS = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", " "];
 
@@ -12,17 +12,13 @@ let skippedLastLetter = false;
 let liveHands, staticHands;
 let model;
 
-// Setup webcam camera
-const camera = new Camera(video, {
-  onFrame: () => {},
-  width: 1920,
-  height: 1080,
-});
+// Webcam settings: front camera, up to 1080p
+const cameraConstraints = { video: { facingMode: "user", width: 1920, height: 1080 } };
 
 // Declare the options for the mediapipe hand landmark detector
 const options = (mode) => ({
   baseOptions: {
-    modelAssetPath: "assets/hand_landmarker.task",
+    modelAssetPath: "assets/hand_landmarker.bin",
   },
   numHands: 1,
   min_hand_detection_confidence: 0,
@@ -34,13 +30,14 @@ async function main() {
   // Load the ASL interpreter model
   model = await tf.loadGraphModel("assets/model/model.json");
 
-  const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm");
+  const vision = await FilesetResolver.forVisionTasks("vendor/tasks-vision/wasm");
 
   // Setup the mediapipe landmark models
   liveHands = await HandLandmarker.createFromOptions(vision, options("LIVE_STREAM")); // For detecting hand location in webcam input
   staticHands = await HandLandmarker.createFromOptions(vision, options("IMAGE")); // For detecting hand landmarks in cropped frame
 
-  camera.start();
+  // Start the webcam, the video element autoplays the stream
+  video.srcObject = await navigator.mediaDevices.getUserMedia(cameraConstraints);
 
   // Start detecting once webcam data is ready
   video.addEventListener("loadeddata", () => {
